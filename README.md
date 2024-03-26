@@ -13,7 +13,11 @@ Files included as a POST request will be returned as images representing the bod
 docker run --gpus all -p 5000:5000 julianfl0w/bodypix:latest
 ```
 
-After starting the service, use webcam.py or video.py to send requests to the server at port 5000.
+After starting the service, use `webcam.py` or `video.py` to send requests to the server at port 5000:
+
+- `webcam.py` processes images in real-time using your computer's webcam. It captures live video feed, segments it using the BodyPix model, and displays the results on-the-fly.
+- `video.py` processes a pre-recorded video file. You need to pass the path to the video file as the first argument when running the script. It reads the video frame by frame, sends each frame for segmentation, and can optionally save or display the output.
+
 
 ## API Endpoints
 
