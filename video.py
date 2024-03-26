@@ -99,6 +99,6 @@ def process_video(input_video_filename, output_video_filename):
     print(f"Processing completed. Output saved to {output_video_filename}")
 
 # Example usage
-input_video = 'wafflenyc.mp4'
+input_video = sys.argv[1]
 output_video = 'example.mp4'
 process_video(input_video, output_video)
