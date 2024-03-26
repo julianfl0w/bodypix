@@ -1,12 +1,43 @@
-# bodypix docker
+# BodyPix Segmentation Service
+This service provides an API for segmenting human bodies in images using the BodyPix model. It allows clients to upload an image, and returns a segmented version of the image with different body parts highlighted.
 
-## Example
-
-
-## Introduction
 This Docker image encapsulates the @tensorflow-models/body-pix Javascript library, running as a REST API on nodejs. 
 
-Files included as a POST request will be returned as images representing the bodypix numbers for body parts:
+Files included as a POST request will be returned as images representing the bodypix numbers for body parts (below)
+
+## Example
+[output.webm](https://github.com/julianfl0w/bodypix/assets/8158655/205291a3-6148-4b7b-8654-f1af37639b14)
+
+## Quick Start
+```bash
+docker run --gpus all -p 5000:5000 julianfl0w/bodypix:latest
+```
+
+After starting the service, use webcam.py or video.py to send requests to the server at port 5000.
+
+## API Endpoints
+
+### POST `/detect_faces`
+
+Uploads an image for body part segmentation and returns an image highlighting different body parts.
+
+#### Request
+
+- **Content-Type:** `multipart/form-data`
+- **Body:** A single image file under the key `image`.
+
+#### Response
+
+- **Content-Type:** `image/png`
+- The response body contains a PNG image of the segmented body parts.
+
+#### Example CURL Request
+
+```bash
+curl -X POST -F "image=@path_to_your_image.jpg" http://localhost:5000/detect_faces -o segmented_image.png
+```
+
+## Body Part Numbers
 
 | Part Id | Part Name          |
 |---------|--------------------|
@@ -35,10 +66,3 @@ Files included as a POST request will be returned as images representing the bod
 | 21      | rightHand          |
 | 22      | rightLowerArmFront |
 | 23      | leftHand           |
-
-## Run
-```bash
-docker run --gpus all -p 5000:5000 julianfl0w/bodypix:latest
-```
-
-then, run either webcam.py or video.py. These files make requests to the 5000 endpoint
