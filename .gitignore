@@ -2,3 +2,5 @@ node_modules
 package-lock.json
 *.mp4
 *.webm
+*.mov
+__pycache__

@@ -1,12 +1,13 @@
-process.env['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true';
-
 const express = require('express');
 const tf = require('@tensorflow/tfjs-node-gpu'); // Ensure tfjs-node-gpu is installed and CUDA is properly set up
 const bodyPix = require('@tensorflow-models/body-pix');
 const multer = require('multer');
 
+// Set TF_FORCE_GPU_ALLOW_GROWTH to true
+process.env['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true';
+
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000; // Use PORT environment variable if available, else default to 5000
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -14,11 +15,16 @@ let net;
 
 async function loadModel() {
   try {
+    const architecture = process.env.BODYPIX_ARCHITECTURE || 'MobileNetV1';
+    const outputStride = process.env.BODYPIX_OUTPUT_STRIDE ? parseInt(process.env.BODYPIX_OUTPUT_STRIDE, 10) : 16;
+    const multiplier = process.env.BODYPIX_MULTIPLIER ? parseFloat(process.env.BODYPIX_MULTIPLIER) : 1.0;
+    const quantBytes = process.env.BODYPIX_QUANT_BYTES ? parseInt(process.env.BODYPIX_QUANT_BYTES, 10) : 2;
+
     net = await bodyPix.load({
-      architecture: 'ResNet50',
-      outputStride: 4,
-      multiplier: 1.0,
-      quantBytes: 2
+      architecture: architecture,
+      outputStride: outputStride,
+      multiplier: multiplier,
+      quantBytes: quantBytes
     });
     console.log('BodyPix model loaded');
   } catch (error) {
@@ -41,23 +47,18 @@ app.post('/detect_faces', upload.single('image'), async (req, res) => {
       segmentationThreshold: 0.5
     });
     
-    // Create a tensor from the entire segmentation data array
     const segmentationTensor = tf.tensor2d(segmentation.data, [segmentation.height, segmentation.width], 'int32');
     const segmentation3D = segmentationTensor.expandDims(-1);
     
-    // Convert the full segmentation tensor to a PNG buffer
     const pngBuffer = await tf.node.encodePng(segmentation3D);
     
-    // Send the PNG buffer as a response
     res.writeHead(200, {
       'Content-Type': 'image/png',
       'Content-Disposition': 'attachment; filename=segmentation.png'
     });
     res.end(Buffer.from(pngBuffer), 'binary');
     
-    // Dispose of tensors to free up memory
     tf.dispose([imgTensor, segmentationTensor, segmentation3D]);
-  
   } catch (error) {
     console.error(error);
     if (!res.headersSent) {
