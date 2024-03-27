@@ -1,0 +1,1 @@
+docker run -it --gpus all -v $(pwd):/app -p 5000:5000 julianfl0w/bodypix:latest bash

@@ -10,6 +10,9 @@ COPY . /app
 # Install Node.js, npm, and other dependencies
 RUN apt-get update && \
     apt-get install -y nodejs npm && \
+    # Clean up APT when done to reduce image size
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     npm install @tensorflow/tfjs-node && \
     # If using GPU, you can uncomment the line below and comment out the tfjs-node installation line
     # npm install @tensorflow/tfjs-node-gpu && \
@@ -19,4 +22,4 @@ RUN apt-get update && \
 EXPOSE 5000
 
 # Start the server
-CMD ["node", "server.js"]
+CMD ["node", "bodypix.js"]
