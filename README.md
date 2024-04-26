@@ -9,6 +9,16 @@ Files included as a POST request will be returned as images representing the bod
 [output.webm](https://github.com/julianfl0w/bodypix/assets/8158655/205291a3-6148-4b7b-8654-f1af37639b14)
 
 ## Quick Start
+### Standard run 
+npm install
+node bodypix.js
+
+Then, if you want to do face tracking
+python face_track.py
+Or, to see the segmentation
+python webcam.py
+
+### Docker run (server)
 ```bash
 docker run --gpus all -p 5000:5000 julianfl0w/bodypix:latest
 ```
